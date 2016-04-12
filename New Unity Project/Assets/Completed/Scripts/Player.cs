@@ -30,6 +30,7 @@ public class Player : MovingObject
         //MovingObjectのStartメソッド呼び出し
         base.Start();
     }
+
     //Playerスクリプトが無効になる前に、体力をGameManagerへ保存
     //UnityのAPIメソッド(Unityに標準で用意された機能)
     private void OnDisable()

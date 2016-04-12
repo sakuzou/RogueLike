@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
 
     private Text levelText; //レベルテキスト
     private GameObject levelImage; //レベルイメージ
-    private int level = 10; //レベルは1にしておく
+    private int floor = 10; //レベルは1にしておく
     private bool doingSetup; //levelImageの表示等で活用
 
     private List<Enemy> enemies;    //Enemyクラスの配列
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     //UnityのAPIで、Sceneが呼ばれる度に実行されるメソッド
     private void OnLevelWasLoaded(int index)
     {
-        level++; //レベルを1プラスする
+        floor++; //レベルを1プラスする
         InitGame();
     }
 
@@ -59,12 +59,12 @@ public class GameManager : MonoBehaviour
         //LevelImageオブジェクト・LevelTextオブジェクトの取得
         levelImage = GameObject.Find("LevelImage");
         levelText = GameObject.Find("LevelText").GetComponent<Text>();
-        levelText.text = "Day " + level; //最新のレベルに更新
+        levelText.text = "Day " + floor; //最新のレベルに更新
         levelImage.SetActive(true); //LebelImageをアクティブにし表示
         Invoke("HideLevelImage", levelStartDelay); //2秒後にメソッド呼び出し
 
         enemies.Clear(); //EnemyのList(配列)を初期化
-        boardScript.SetupScene(level);
+        boardScript.SetupScene(floor);
     }
 
     private void HideLevelImage()
@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         //ゲームオーバーメッセージを表示
-        levelText.text = "After " + level + " days, you starved.";
+        levelText.text =  floor + " 階まで到達, あなたは死にました.";
         levelImage.SetActive(true);
 
         //GameManagerを無効にする
