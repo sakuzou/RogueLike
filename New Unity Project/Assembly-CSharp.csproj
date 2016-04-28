@@ -49,6 +49,7 @@
      <Compile Include="Assets\Completed\Scripts\Enemy.cs" />
      <Compile Include="Assets\Completed\Scripts\GameManager.cs" />
      <Compile Include="Assets\Completed\Scripts\Loader.cs" />
+     <Compile Include="Assets\Completed\Scripts\Menu.cs" />
      <Compile Include="Assets\Completed\Scripts\MovingObject.cs" />
      <Compile Include="Assets\Completed\Scripts\Player.cs" />
      <Compile Include="Assets\Completed\Scripts\Wall.cs" />

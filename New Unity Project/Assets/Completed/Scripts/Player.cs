@@ -11,31 +11,50 @@ public class Player : MovingObject
     public int pointsPerFood = 10;          //フードの回復量
     public int pointsPerSoda = 20;          //ソーダの回復量
     public float restartlevelDelay = 0.1f;  //次レベルへ行く時の時間差
-    public Text foodText;                   //FoodText
+    
+
     private Animator m_Anim;    //歩く方向用
 
-    private Animator animator; //PlayerChop, PlayerHit用
-    private int life; //プレイヤーの体力
+    //private Animator animator; //PlayerChop, PlayerHit用
+    private int HP;         //プレイヤーの体力
+    private int Gold = 0;   //プレイヤーの所持金
+    private int Level = 1;  //プレイヤーのレベル
+    private string Mes;
+    private Menu menu;
+    private GameObject MessageImage;
+
+    private Text MesText;
+    private Text HpText;
+    private Text MhpText;
+    private Text GoldText;
+    private Text LevelText;
 
     //MovingObjectのStartメソッドを継承　baseで呼び出し
     protected override void Start()
     {
         //Animatorをキャッシュしておく
-        animator = GetComponent<Animator>();
+        //animator = GetComponent<Animator>();
         m_Anim = GetComponent<Animator>();
         //シングルトンであるGameManagerのplayerFoodPointsを使うことに
         //よって、レベルを跨いでも値を保持しておける
-        life = GameManager.instance.playerFoodPoints;
-        foodText.text = "Food: " + life;
+        HP = GameManager.instance.playerFoodPoints;
         //MovingObjectのStartメソッド呼び出し
         base.Start();
+
+        MessageImage = GameObject.Find("MessageImage");
+        MesText = GameObject.Find("MesText").GetComponent<Text>();
+        HpText = GameObject.Find("HpText").GetComponent<Text>();
+        MhpText = GameObject.Find("MhpText").GetComponent<Text>();
+        GoldText = GameObject.Find("GoldText").GetComponent<Text>();
+        LevelText = GameObject.Find("LevelText").GetComponent<Text>();
+        MessageImage.SetActive(false);
     }
 
     //Playerスクリプトが無効になる前に、体力をGameManagerへ保存
     //UnityのAPIメソッド(Unityに標準で用意された機能)
     private void OnDisable()
     {
-        GameManager.instance.playerFoodPoints = life;
+        GameManager.instance.playerFoodPoints = HP;
     }
 
     void Update()
@@ -73,6 +92,10 @@ public class Player : MovingObject
                 //Playerの場合はWall以外判定する必要はない
                 AttemptMove<Wall>(xDir, yDir);
             }
+
+            HpText.text = ""+HP;
+            GoldText.text = ""+Gold;
+            MhpText.text = "100";
         }
 
         //攻撃
@@ -83,14 +106,19 @@ public class Player : MovingObject
             GameManager.instance.playersTurn = false;   //プレイヤーのターン終了
         }
 
-        
+        //メニュー画面を開く
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            menu = gameObject.GetComponent<Menu>();
+            menu.Open();
+        }
     }
 
     protected override void AttemptMove<T>(int xDir, int yDir)
     {
         //移動1回につき1ポイント失う
-        life--;
-        foodText.text = "食べ物: " + life;
+        HP--;
+        Gold++;
         //MovingObjectのAttemptMove呼び出し
         base.AttemptMove<T>(xDir, yDir);
 
@@ -119,14 +147,16 @@ public class Player : MovingObject
         else if (other.tag == "Food")
         {
             
-            life += pointsPerFood;                                      //体力を回復しotherオブジェクトを削除
-            foodText.text = "+" + pointsPerFood + " Food: " + life;     //
+            HP += pointsPerFood;                                      //体力を回復しotherオブジェクトを削除
+            Mes = "体力が" + pointsPerFood +"回復しました";
+            Message(Mes);
             other.gameObject.SetActive(false);                          //
         }
         else if (other.tag == "Soda")
         {
-            life += pointsPerSoda;                                      //体力を回復しotherオブジェクトを削除
-            foodText.text = "+" + pointsPerSoda + " Food: " + life;     //
+            HP += pointsPerSoda;                                      //体力を回復しotherオブジェクトを削除
+            Mes = "体力が" + pointsPerSoda + "回復しました";
+            Message(Mes);
             other.gameObject.SetActive(false);                          //
         }
     }
@@ -142,18 +172,26 @@ public class Player : MovingObject
     public void LoseLife(int loss)
     {
         //animator.SetTrigger("PlayerHit");
-        life -= loss;
-        foodText.text = "-" + loss + " Food: " + life;
+        HP -= loss;
+        Mes = "プレイヤーは" + loss + "のダメージ ";
+        Message(Mes);
         CheckIfGameOver();
     }
 
     private void CheckIfGameOver()
     {
-        if (life <= 0)
+        if (HP <= 0)
         {
             //GameManagerのGameOverメソッド実行
             //public staticな変数なのでこのような簡単な形でメソッドを呼び出せる
             GameManager.instance.GameOver();
         }
     }
+
+    private void Message(string Mes)
+    {
+        MessageImage.SetActive(true);
+        MesText.text = Mes;
+    }
+
 }

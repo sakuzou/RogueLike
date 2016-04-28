@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+
 //abstract：継承される側(スーパークラス)に付ける修飾子
 public abstract class MovingObject : MonoBehaviour
 {
 
     public float moveTime = 0.1f;
     public LayerMask blockingLayer;
+    
 
     private BoxCollider2D boxCollider;
     private Rigidbody2D rb2D;
@@ -24,6 +26,7 @@ public abstract class MovingObject : MonoBehaviour
         rb2D = GetComponent<Rigidbody2D>();
         //デフォルトだと 1f ÷ 0.1f = 10.0f
         inverseMoveTime = 1f / moveTime;
+        
     }
 
     //移動可能かを判断するメソッド　可能な場合はSmoothMovementへ
@@ -130,9 +133,6 @@ public abstract class MovingObject : MonoBehaviour
         //向いている方向を求める
         Direction_X = xDir;
         Direction_Y = yDir;
-
-
-
     }
 
 }

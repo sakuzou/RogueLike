@@ -22,12 +22,12 @@ public class BoardManager : MonoBehaviour
     }
 
     //8*8のゲームボードを作るので縦の段を8、横の列を8
-    public int columns = 8;
-    public int rows = 8;
+    public int columns = 10;
+    public int rows = 10;
     //壁は5〜9の間で出現
-    public Count wallCount = new Count(5, 9);
+    public Count wallCount = new Count(0, 20);
     //アイテムは1〜5の間で出現
-    public Count foodCount = new Count(1, 5);
+    public Count foodCount = new Count(0, 20);
     //Exitは単体
     public GameObject exit;
     //床・内壁・アイテム・敵キャラ・外壁は複数あるため配列

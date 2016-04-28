@@ -6,24 +6,26 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
-    public float levelStartDelay = 0.5f;          //レベル表示画面で2秒待つ
+    public float NextStartDelay = 0.5f;          //レベル表示画面で2秒待つ
     public float turnDelay = .1f;               //Enemyの動作時間(0.1秒)
     public static GameManager instance = null;
     public BoardManager boardScript;
     public int playerFoodPoints = 100;          //プレイヤーの体力
-
+    
     //HideInInspector: public変数だけどInspectorで編集させない
     //プレイヤーの順番か判定
     [HideInInspector]
     public bool playersTurn = true;
 
-    private Text levelText; //レベルテキスト
-    private GameObject levelImage; //レベルイメージ
-    private int floor = 10; //レベルは1にしておく
-    private bool doingSetup; //levelImageの表示等で活用
+    private Text NextText;          //レベルテキスト
+    private GameObject NextImage;   //レベルイメージ
+    private int floor = 10;         //レベルは1にしておく
+    private bool doingSetup;        //NextImageの表示等で活用
 
     private List<Enemy> enemies;    //Enemyクラスの配列
     private bool enemiesMoving;     //Enemyのターン中true
+
+    private Text FloorText;         //階層を表示するテキスト
       
     void Awake()
     {
@@ -46,7 +48,7 @@ public class GameManager : MonoBehaviour
     }
 
     //UnityのAPIで、Sceneが呼ばれる度に実行されるメソッド
-    private void OnLevelWasLoaded(int index)
+    private void OnNextWasLoaded(int index)
     {
         floor++; //レベルを1プラスする
         InitGame();
@@ -56,28 +58,30 @@ public class GameManager : MonoBehaviour
     {
         //trueの間、プレイヤーは身動きを取れない
         doingSetup = true;
-        //LevelImageオブジェクト・LevelTextオブジェクトの取得
-        levelImage = GameObject.Find("LevelImage");
-        levelText = GameObject.Find("LevelText").GetComponent<Text>();
-        levelText.text = "Day " + floor; //最新のレベルに更新
-        levelImage.SetActive(true); //LebelImageをアクティブにし表示
-        Invoke("HideLevelImage", levelStartDelay); //2秒後にメソッド呼び出し
+        //NextImageオブジェクト・NextTextオブジェクトの取得
+        NextImage = GameObject.Find("NextImage");
+        NextText = GameObject.Find("NextText").GetComponent<Text>();
+        NextText.text = "第" + floor + "階層"; //最新のレベルに更新
+        NextImage.SetActive(true); //LebelImageをアクティブにし表示
+        Invoke("HideNextImage", NextStartDelay); //2秒後にメソッド呼び出し
+
+        FloorText = GameObject.Find("FloorText").GetComponent<Text>();
 
         enemies.Clear(); //EnemyのList(配列)を初期化
         boardScript.SetupScene(floor);
     }
 
-    private void HideLevelImage()
+    private void HideNextImage()
     {
-        levelImage.SetActive(false);    //LevelImage非アクティブ化
+        NextImage.SetActive(false);    //NextImage非アクティブ化
         doingSetup = false;             //プレイヤーが動けるようになる
     }
 
     public void GameOver()
     {
         //ゲームオーバーメッセージを表示
-        levelText.text =  floor + " 階まで到達, あなたは死にました.";
-        levelImage.SetActive(true);
+        NextText.text =  floor + " 階まで到達, あなたは死にました.";
+        NextImage.SetActive(true);
 
         //GameManagerを無効にする
         enabled = false;
@@ -89,6 +93,8 @@ public class GameManager : MonoBehaviour
         if (playersTurn || enemiesMoving || doingSetup){
             return;
         }
+       
+        FloorText.text = ""+floor;
 
         StartCoroutine(MoveEnemies());
     }
